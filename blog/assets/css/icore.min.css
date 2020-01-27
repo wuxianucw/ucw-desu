@@ -1,0 +1,8 @@
+/**
+ * @description iCore自定义加强效果
+ * @author 无限UCW
+ * @version 1.2.1
+ * @link https://ucw.moe/
+ */
+
+div#aside-user>div.wrapper>div>a>span.avatar>img:hover{animation:ava-light 5s;-moz-animation:ava-light 5s;-webkit-animation:ava-light 5s;-o-animation:ava-light 5s;animation-iteration-count:infinite}@keyframes ava-light{0%{box-shadow:0 0 10px 10px rgba(255,255,0,.3)}40%{box-shadow:0 0 40px 40px rgba(255,255,0,.3)}50%{box-shadow:0 0 50px 50px rgba(255,255,0,.3)}60%{box-shadow:0 0 40px 40px rgba(255,255,0,.3)}100%{box-shadow:0 0 10px 10px rgba(255,255,0,.3)}}@-moz-keyframes ava-light{0%{box-shadow:0 0 10px 10px rgba(255,255,0,.3)}40%{box-shadow:0 0 40px 40px rgba(255,255,0,.3)}50%{box-shadow:0 0 50px 50px rgba(255,255,0,.3)}60%{box-shadow:0 0 40px 40px rgba(255,255,0,.3)}100%{box-shadow:0 0 10px 10px rgba(255,255,0,.3)}}@-webkit-keyframes ava-light{0%{box-shadow:0 0 10px 10px rgba(255,255,0,.3)}40%{box-shadow:0 0 40px 40px rgba(255,255,0,.3)}50%{box-shadow:0 0 50px 50px rgba(255,255,0,.3)}60%{box-shadow:0 0 40px 40px rgba(255,255,0,.3)}100%{box-shadow:0 0 10px 10px rgba(255,255,0,.3)}}@-o-keyframes ava-light{0%{box-shadow:0 0 10px 10px rgba(255,255,0,.3)}40%{box-shadow:0 0 40px 40px rgba(255,255,0,.3)}50%{box-shadow:0 0 50px 50px rgba(255,255,0,.3)}60%{box-shadow:0 0 40px 40px rgba(255,255,0,.3)}100%{box-shadow:0 0 10px 10px rgba(255,255,0,.3)}}.heimu:active,.heimu:hover{color:#fff}.heimu{background-color:#252525;color:#252525;text-shadow:none;transition:color 0.3s}

@@ -1,0 +1,48 @@
+# Auto release and force cache
+
+name: Auto release and force cache
+
+# Controls when the action will run. Triggers the workflow only on push
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    # Auto release
+    - name: Auto release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: latest
+        release_name: Latest version
+        body: Auto release the latest version.
+
+    # Force cache
+    - name: Force cache
+      run: |
+        function scan() {
+            for e in `ls $1`
+            do
+                object=$1"/"$e
+                if [ -d $object ]
+                then
+                    scan $object
+                else
+                    curl -s -o /dev/null "https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu/"$object
+                    echo "Force cached https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu/"$object
+                fi
+            done
+        }
+        scan .

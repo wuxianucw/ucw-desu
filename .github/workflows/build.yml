@@ -21,13 +21,12 @@ jobs:
 
     # Auto release
     - name: Auto release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: marvinpinto/action-automatic-releases@latest
       with:
-        tag_name: latest
-        release_name: Latest version
-        body: Auto release the latest version.
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        automatic_release_tag: latest
+        prerelease: false
+        title: Latest version
 
     # Force cache
     - name: Force cache
@@ -40,8 +39,8 @@ jobs:
                 then
                     scan $object
                 else
-                    curl -s -o /dev/null "https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@latest/"$object
-                    echo "Force cached https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@latest/"$object
+                    url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@latest"${object:1}
+                    echo "Force cached "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
                 fi
             done
         }

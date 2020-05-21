@@ -48,6 +48,7 @@ jobs:
                         echo " - Try master "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
                         url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@latest"${object:1}
                         echo " - Retry "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
+                    fi
                 fi
             done
         }

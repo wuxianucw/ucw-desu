@@ -40,8 +40,8 @@ jobs:
                 then
                     scan $object
                 else
-                    curl -s -o /dev/null "https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu/"$object
-                    echo "Force cached https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu/"$object
+                    curl -s -o /dev/null "https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@latest/"$object
+                    echo "Force cached https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@latest/"$object
                 fi
             done
         }

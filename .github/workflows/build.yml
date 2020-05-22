@@ -24,7 +24,7 @@ jobs:
       uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        automatic_release_tag: latest
+        automatic_release_tag: ${{ github.run_id }}
         prerelease: false
         title: Latest version
 
@@ -39,16 +39,19 @@ jobs:
                 then
                     scan $object
                 else
-                    url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@latest"${object:1}
+                    curl -s -o /dev/null --retry 5 "https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@master"${object:1}
+                    url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@${{ github.run_id }}"${object:1}
                     code=`curl -s -o /dev/null --retry 5 -w %{http_code} $url`
-                    echo "Force cached "$url" [ "$code" ]"
-                    if [ "$code" = "404" ]
+                    echo "Force cache "$url" [ "$code" ]"
+                    if [ $code != "200" ]
                     then
                         url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@master"${object:1}
                         echo " - Try master "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
-                        url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@latest"${object:1}
+                        url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@${{ github.run_id }}"${object:1}
                         echo " - Retry "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
                     fi
+                    url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu"${object:1}
+                    echo " -> "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
                 fi
             done
         }

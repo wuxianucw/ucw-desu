@@ -18,9 +18,39 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
+    
+    # Get changed files
+    - id: files
+      name: Get changed files
+      uses: lots0logs/gh-action-get-changed-files@2.1.4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Check files
+      run: |
+        readarray -t added_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.added }}')"
+        readarray -t renamed_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.renamed }}')"
+        readarray -t modified_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.modified }}')"
+        for file in ${added_files[@]}; do
+          if [[ file != .github* ]]; then
+            exit 0
+          fi
+        done
+        for file in ${renamed_files[@]}; do
+          if [[ file != .github* ]]; then
+            exit 0
+          fi
+        done
+        for file in ${modified_files[@]}; do
+          if [[ file != .github* ]]; then
+            exit 0
+          fi
+        done
+        exit 1
 
     # Auto release
     - name: Auto release
+      if: success()
       uses: marvinpinto/action-automatic-releases@latest
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -30,29 +60,39 @@ jobs:
 
     # Force cache
     - name: Force cache
+      if: success()
       run: |
-        function scan() {
-            for e in `ls $1`
-            do
-                object=$1"/"$e
-                if [ -d $object ]
-                then
-                    scan $object
-                else
-                    curl -s -o /dev/null --retry 5 "https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@master"${object:1}
-                    url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@${{ github.run_id }}"${object:1}
-                    code=`curl -s -o /dev/null --retry 5 -w %{http_code} $url`
-                    echo "Force cache "$url" [ "$code" ]"
-                    if [ $code != "200" ]
-                    then
-                        url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@master"${object:1}
-                        echo " - Try master "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
-                        url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@${{ github.run_id }}"${object:1}
-                        echo " - Retry "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
-                    fi
-                    url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu"${object:1}
-                    echo " -> "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
-                fi
-            done
+        function uriencode { jq -nr --arg v "$1" '$v|@uri'; }
+        function force_cache() {
+          curl -s -o /dev/null --retry 5 "https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@master/"$1
+          url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@${{ github.run_id }}/"$1
+          code=`curl -s -o /dev/null --retry 5 -w %{http_code} $url`
+          echo "Force cache "$url" [ "$code" ]"
+          if [ $code != "200" ]
+          then
+              url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@master/"$1
+              echo " - Try master "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
+              url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@${{ github.run_id }}/"$1
+              echo " - Retry "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
+          fi
+          url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu/"$1
+          echo " -> "$url" [ `curl -s -o /dev/null --retry 5 -w %{http_code} $url` ]"
         }
-        scan .
+        readarray -t added_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.added }}')"
+        readarray -t renamed_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.renamed }}')"
+        readarray -t modified_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.modified }}')"
+        for file in ${added_files[@]}; do
+          if [[ file != .github* ]]; then
+            force_cache `uriencode $file`
+          fi
+        done
+        for file in ${renamed_files[@]}; do
+          if [[ file != .github* ]]; then
+            force_cache `uriencode $file`
+          fi
+        done
+        for file in ${modified_files[@]}; do
+          if [[ file != .github* ]]; then
+            force_cache `uriencode $file`
+          fi
+        done

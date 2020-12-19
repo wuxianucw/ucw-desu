@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -30,6 +30,7 @@ jobs:
     - id: check
       name: Check files
       run: |
+        # Check files
         readarray -t added_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.added }}')"
         readarray -t renamed_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.renamed }}')"
         readarray -t modified_files <<<"$(jq -r '.[]' <<<'${{ steps.files.outputs.modified }}')"
@@ -67,6 +68,7 @@ jobs:
     - name: Force cache
       if: steps.check.outputs.continue == 1
       run: |
+        # Force cache
         function uriencode {
           uri=`jq -nr --arg v "$1" '$v|@uri'`
           echo ${uri//%2[Ff]//}

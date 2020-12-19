@@ -67,7 +67,10 @@ jobs:
     - name: Force cache
       if: steps.check.outputs.continue == 1
       run: |
-        function uriencode { jq -nr --arg v "$1" '$v|@uri'; }
+        function uriencode {
+          uri=`jq -nr --arg v "$1" '$v|@uri'`
+          echo ${uri//%2[Ff]//}
+        }
         function force_cache() {
           curl -s -o /dev/null --retry 5 "https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@master/"$1
           url="https://cdn.jsdelivr.net/gh/wuxianucw/ucw-desu@${{ github.run_id }}/"$1
